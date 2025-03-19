@@ -5,7 +5,7 @@ app = Flask(__name__)
 import sqlite3
 
 #python -m venv venv para criar o ambiente virtual
-#venv\Scripts\activate para ativar o ambiente virtual
+#venv/Scripts/activate para ativar o ambiente virtual
 #pip install flask para instalar o flask
 #python app.py para rodar o servidor
 #ctrl + c para parar o servidor
