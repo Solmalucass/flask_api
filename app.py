@@ -1,55 +1,80 @@
-from flask import Flask, resquest
+import sqlite3
+from flask import Flask, request, jsonify
 
+"""
+DONNT FORGET ATIVAR O AMBIENTE VIRTUAL!!!
+python -m venv venv para criar o ambiente virtual
+.venv\Scripts\activate.ps1 para ativar o ambiente virtual
+pip install flask para instalar o flask
+python app.py para rodar o servidor
+deactivate para desativar o ambiente virtual
+"""
+
+# criando a aplicação flask
 app = Flask(__name__)
 
-import sqlite3
-
-#python -m venv venv para criar o ambiente virtual
-#venv/Scripts/activate para ativar o ambiente virtual
-#pip install flask para instalar o flask
-#python app.py para rodar o servidor
-#ctrl + c para parar o servidor
-#deactivate para desativar o ambiente virtual
-
-"""
-@app.route("/pagar")
-def exibir_mensagem_pagar():
-    return "<h1> Pagar as pessoas faz bem </h1>"
-
-@app.route("/receber")
-def exibir_mensagem_receber():
-    return "<h2> Receber as pessoas faz bem </h2>"
-
-@app.route("/comidas")
-def exibir_mensagem_comidas():
-    return "<h2> Tomate à milanesa </h2>"
-
-"""
-#criando a estrutura de banco de dados
+# criando a estrutura do banco de dados
 def init_db():
-    #sqlite3 crie o arquivo database.db e se conecte com a variável conn
     with sqlite3.connect("database.db") as conn:
-        conn.execute("""
-                CREATE TABLE IF NOT EXISTS LIVROS(
-                     id INTEGER PRIMARY KEY AUTOINCREMENT
-                     titulo TEXT NOT NULL,
-                     categoria TEXT NOT NULL,
-                     autor TEX NOT NULL,
-                     imagem_url TEXT NOT NULL
-                     )
-    """)
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS LIVROS (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo TEXT NOT NULL,
+                autor TEXT NOT NULL,
+                image_url TEXT NOT NULL
+                )
+            """
+        )
 
+# inicializando o banco de dados
 init_db()
 
-@app.route("/doar", methods=["POST"])
-def doar():
-
+# Meu endpoint da atividade lá atrás
+@app.route('/quero-doar', methods=["POST"])
+def quero_doar():
+    # recebendo os dados do enviados pelo cliente
     dados = request.get_json()
+
     titulo = dados.get("titulo")
     categoria = dados.get("categoria")
     autor = dados.get("autor")
-    imagem_url = dados.get("imagem_url")
+    image_url = dados.get("image_url")
+
+    if not titulo or not categoria or not autor or not image_url:
+        # retornando uma mensagem de erro caso algum campo esteja vazio
+        return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
     
-#se o arquivo app.py for o arquivo prinpripal da nossa aplicação, rode a api no modo de depuração
+    # abrindo a conexão com o banco de dados
+    with sqlite3.connect("database.db") as conn: 
+        conn.execute(f"""
+                     INSERT INTO LIVROS (titulo, categoria, autor, image_url)
+                     VALUES ("{titulo}", "{categoria}", "{autor}", "{image_url}")
+                     """)
+        conn.commit() # salvando as alterações no banco de dados
+    return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
+
+# Livros cadastrados
+@app.route('/livros-doados', methods=["GET"])
+def livros_doados():
+    with sqlite3.connect("database.db") as conn:
+        livros = conn.execute("SELECT * FROM LIVROS").fetchall()
+        
+        livros_formatados = [] # lista para armazenar os livros formatados
+
+        for item in livros:
+            # criando um dicionário para os livros
+            dicionario_livro = {
+                "id": item[0], # id do livro
+                "titulo": item[1], # titulo do livro
+                "categoria": item[2], # categoria do livro
+                "autor": item[3], # autor do livro
+                "image_url": item[4] # url da capa do livro
+            }
+
+            livros_formatados.append(dicionario_livro) # adicionando o livro formatado na lista de livros formatados
+
+        return jsonify(livros_formatados), 200 # retornando a lista de livros formatados
+
 if __name__ == "__main__":
     app.run(debug=True)
