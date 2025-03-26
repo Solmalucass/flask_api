@@ -1,5 +1,6 @@
 import sqlite3
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 """
 DONNT FORGET ATIVAR O AMBIENTE VIRTUAL!!!
@@ -12,6 +13,7 @@ deactivate para desativar o ambiente virtual
 
 # criando a aplicação flask
 app = Flask(__name__)
+CORS(app)
 
 # criando a estrutura do banco de dados
 def init_db():
@@ -78,3 +80,5 @@ def livros_doados():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+    
