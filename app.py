@@ -26,7 +26,7 @@ def init_db():
                 titulo TEXT NOT NULL,
                 categoria TEXT NOT NULL,
                 autor TEXT NOT NULL,
-                image_url TEXT NOT NULL
+                imagem_url TEXT NOT NULL
                 )
         """)
 
@@ -42,17 +42,17 @@ def quero_doar():
     titulo = dados.get("titulo")
     categoria = dados.get("categoria")
     autor = dados.get("autor")
-    image_url = dados.get("image_url")
+    imagem_url = dados.get("imagem_url")
 
-    if not titulo or not categoria or not autor or not image_url:
+    if not titulo or not categoria or not autor or not imagem_url:
         # retornando uma mensagem de erro caso algum campo esteja vazio
         return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
     
     # abrindo a conexão com o banco de dados
     with sqlite3.connect("database.db") as conn: 
         conn.execute(f"""
-        INSERT INTO LIVROS (titulo, categoria, autor, imagem_url) 
-        VALUES("{titulo}","{categoria}","{autor}","{image_url}")
+        INSERT INTO LIVROS (titulo, categoria, autor, image_url) 
+        VALUES("{titulo}","{categoria}","{autor}","{imagem_url}")
 """)
         conn.commit() # salvando as alterações no banco de dados
     return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
@@ -72,7 +72,7 @@ def livros_doados():
                 "titulo": item[1],
                 "categoria": item[2],
                 "autor": item[3],
-                "image_url": item[4]
+                "imagem_url": item[4]
             }
 
             livros_formatados.append(dicionario_livro)
