@@ -23,6 +23,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS LIVROS (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 titulo TEXT NOT NULL,
+                categoria TEXT NOT NULL,
                 autor TEXT NOT NULL,
                 image_url TEXT NOT NULL
                 )
@@ -49,10 +50,10 @@ def quero_doar():
     
     # abrindo a conexão com o banco de dados
     with sqlite3.connect("database.db") as conn: 
-        conn.execute(f"""
+        conn.execute("""
                      INSERT INTO LIVROS (titulo, categoria, autor, image_url)
-                     VALUES ("{titulo}", "{categoria}", "{autor}", "{image_url}")
-                     """)
+                     VALUES (?, ?, ?, ?)
+                     """, (titulo, categoria, autor, image_url))
         conn.commit() # salvando as alterações no banco de dados
     return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
 
