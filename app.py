@@ -15,26 +15,26 @@ deactivate para desativar o ambiente virtual
 app = Flask(__name__)
 CORS(app)
 
+
 # criando a estrutura do banco de dados
 def init_db():
     with sqlite3.connect("database.db") as conn:
         conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS LIVROS (
+            CREATE TABLE IF NOT EXISTS LIVROS(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 titulo TEXT NOT NULL,
                 categoria TEXT NOT NULL,
                 autor TEXT NOT NULL,
                 image_url TEXT NOT NULL
                 )
-            """
-        )
+        """)
 
 # inicializando o banco de dados
 init_db()
 
 # Meu endpoint da atividade lá atrás
-@app.route('/quero-doar', methods=["POST"])
+@app.route("/quero-doar", methods=["POST"])
 def quero_doar():
     # recebendo os dados do enviados pelo cliente
     dados = request.get_json()
@@ -50,15 +50,15 @@ def quero_doar():
     
     # abrindo a conexão com o banco de dados
     with sqlite3.connect("database.db") as conn: 
-        conn.execute("""
-                     INSERT INTO LIVROS (titulo, categoria, autor, image_url)
-                     VALUES (?, ?, ?, ?)
-                     """, (titulo, categoria, autor, image_url))
+        conn.execute(f"""
+        INSERT INTO LIVROS (titulo, categoria, autor, imagem_url) 
+        VALUES("{titulo}","{categoria}","{autor}","{image_url}")
+""")
         conn.commit() # salvando as alterações no banco de dados
     return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
 
 # Livros cadastrados
-@app.route('/livros-doados', methods=["GET"])
+@app.route("/livros-doados", methods=["GET"])
 def livros_doados():
     with sqlite3.connect("database.db") as conn:
         livros = conn.execute("SELECT * FROM LIVROS").fetchall()
@@ -68,16 +68,16 @@ def livros_doados():
         for item in livros:
             # criando um dicionário para os livros
             dicionario_livro = {
-                "id": item[0], # id do livro
-                "titulo": item[1], # titulo do livro
-                "categoria": item[2], # categoria do livro
-                "autor": item[3], # autor do livro
-                "image_url": item[4] # url da capa do livro
+                "id": item[0],
+                "titulo": item[1],
+                "categoria": item[2],
+                "autor": item[3],
+                "image_url": item[4]
             }
 
-            livros_formatados.append(dicionario_livro) # adicionando o livro formatado na lista de livros formatados
+            livros_formatados.append(dicionario_livro)
 
-        return jsonify(livros_formatados), 200 # retornando a lista de livros formatados
+        return jsonify(livros_formatados),
 
 if __name__ == "__main__":
     app.run(debug=True)
