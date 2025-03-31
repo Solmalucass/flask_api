@@ -27,11 +27,14 @@ def init_db():
                 categoria TEXT NOT NULL,
                 autor TEXT NOT NULL,
                 imagem_url TEXT NOT NULL
-                )
-        """)
+            )
+            """
+        )
+
 
 # inicializando o banco de dados
 init_db()
+
 
 # Meu endpoint da atividade lá atrás
 @app.route("/quero-doar", methods=["POST"])
@@ -47,23 +50,26 @@ def quero_doar():
     if not titulo or not categoria or not autor or not imagem_url:
         # retornando uma mensagem de erro caso algum campo esteja vazio
         return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
-    
+
     # abrindo a conexão com o banco de dados
-    with sqlite3.connect("database.db") as conn: 
-        conn.execute(f"""
-        INSERT INTO LIVROS (titulo, categoria, autor, image_url) 
-        VALUES("{titulo}","{categoria}","{autor}","{imagem_url}")
-""")
-        conn.commit() # salvando as alterações no banco de dados
+    with sqlite3.connect("database.db") as conn:
+        conn.execute(
+            f"""
+            INSERT INTO LIVROS (titulo, categoria, autor, imagem_url) 
+            VALUES("{titulo}","{categoria}","{autor}","{imagem_url}")
+            """
+        )
+        conn.commit()  # salvando as alterações no banco de dados
     return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
+
 
 # Livros cadastrados
 @app.route("/livros-doados", methods=["GET"])
 def livros_doados():
     with sqlite3.connect("database.db") as conn:
         livros = conn.execute("SELECT * FROM LIVROS").fetchall()
-        
-        livros_formatados = [] # lista para armazenar os livros formatados
+
+        livros_formatados = []  # lista para armazenar os livros formatados
 
         for item in livros:
             # criando um dicionário para os livros
@@ -72,14 +78,13 @@ def livros_doados():
                 "titulo": item[1],
                 "categoria": item[2],
                 "autor": item[3],
-                "imagem_url": item[4]
+                "imagem_url": item[4],
             }
 
             livros_formatados.append(dicionario_livro)
 
         return jsonify(livros_formatados),
 
+
 if __name__ == "__main__":
     app.run(debug=True)
-
-    
