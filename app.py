@@ -22,7 +22,11 @@ allowed_origins = [
     "https://apivainolivro.onrender.com"
 ]
 
-CORS(app, resources={r"/*": {"origins": allowed_origins}})
+CORS(app, resources={
+    r"/quero-doar": {"origins": allowed_origins, "methods": ["POST"]},
+    r"/livro-doados": {"origins": allowed_origins, "methods": ["GET"]},
+    r"/": {"origins": allowed_origins, "methods": ["GET"]}
+})
 
 
 @app.route("/")
