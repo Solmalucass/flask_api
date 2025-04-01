@@ -14,20 +14,7 @@ deactivate para desativar o ambiente virtual
 
 # criando a aplicação flask
 app = Flask(__name__)
-
-allowed_origins = [
-    "https://doa-livros.vercel.app",
-    "https://doa-livros.vercel.app/quero-doar",
-    "https://doa-livros.vercel.app/livros-doados",
-    "https://apivainolivro.onrender.com"
-]
-
-CORS(app, resources={
-    r"/quero-doar": {"origins": allowed_origins, "methods": ["POST"]},
-    r"/livro-doados": {"origins": allowed_origins, "methods": ["GET"]},
-    r"/": {"origins": allowed_origins, "methods": ["GET"]}
-})
-
+CORS(app)  # habilitando o CORS para a aplicação
 
 @app.route("/")
 def menu_inicial():
