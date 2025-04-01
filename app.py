@@ -13,7 +13,7 @@ deactivate para desativar o ambiente virtual
 
 # criando a aplicação flask
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": ["https://doa-livros.vercel.app/quero-doar"]}})
 
 
 @app.route("/")
