@@ -16,6 +16,10 @@ app = Flask(__name__)
 CORS(app)
 
 
+@app.route("/")
+def menu_inicial():
+    return "<h1>Biblioteca Vai na Web!</h1>"
+
 # criando a estrutura do banco de dados
 def init_db():
     with sqlite3.connect("database.db") as conn:
@@ -26,9 +30,8 @@ def init_db():
                 titulo TEXT NOT NULL,
                 categoria TEXT NOT NULL,
                 autor TEXT NOT NULL,
-                imagem_url TEXT NOT NULL
-            )
-            """
+                image_url TEXT NOT NULL
+            )"""
         )
 
 
@@ -37,26 +40,25 @@ init_db()
 
 
 # Meu endpoint da atividade lá atrás
-@app.route("/quero-doar", methods=["POST"])
-def quero_doar():
+@app.route("/doar", methods=["POST"])
+def doar():
     # recebendo os dados do enviados pelo cliente
     dados = request.get_json()
 
     titulo = dados.get("titulo")
     categoria = dados.get("categoria")
     autor = dados.get("autor")
-    imagem_url = dados.get("imagem_url")
+    image_url = dados.get("image_url")
 
-    if not titulo or not categoria or not autor or not imagem_url:
+    if not titulo or not categoria or not autor or not image_url:
         # retornando uma mensagem de erro caso algum campo esteja vazio
         return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
 
     # abrindo a conexão com o banco de dados
     with sqlite3.connect("database.db") as conn:
-        conn.execute(
-            f"""
-            INSERT INTO LIVROS (titulo, categoria, autor, imagem_url) 
-            VALUES("{titulo}","{categoria}","{autor}","{imagem_url}")
+        conn.execute(f"""
+            INSERT INTO LIVROS (titulo, categoria, autor, image_url) 
+            VALUES("{titulo}","{categoria}","{autor}","{image_url}")
             """
         )
         conn.commit()  # salvando as alterações no banco de dados
@@ -64,8 +66,8 @@ def quero_doar():
 
 
 # Livros cadastrados
-@app.route("/livros-doados", methods=["GET"])
-def livros_doados():
+@app.route("/livros", methods=["GET"])
+def livros():
     with sqlite3.connect("database.db") as conn:
         livros = conn.execute("SELECT * FROM LIVROS").fetchall()
 
@@ -78,12 +80,12 @@ def livros_doados():
                 "titulo": item[1],
                 "categoria": item[2],
                 "autor": item[3],
-                "imagem_url": item[4],
+                "image_url": item[4],
             }
 
             livros_formatados.append(dicionario_livro)
 
-        return jsonify(livros_formatados),
+        return jsonify(livros_formatados), 200
 
 
 if __name__ == "__main__":
