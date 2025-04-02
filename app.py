@@ -41,7 +41,7 @@ init_db()
 
 # Meu endpoint da atividade lá atrás
 @app.route("/quero-doar", methods=["POST"])
-def doar():
+def quero_doar():
     # recebendo os dados do enviados pelo cliente
     dados = request.get_json()
 
@@ -66,8 +66,8 @@ def doar():
 
 
 # Livros cadastrados
-@app.route("/livro-doados", methods=["GET"])
-def livros():
+@app.route("/livros-doados", methods=["GET"])
+def livros_doados():
     with sqlite3.connect("database.db") as conn:
         livros = conn.execute("SELECT * FROM LIVROS").fetchall()
 
