@@ -42,7 +42,6 @@ init_db()
 # Meu endpoint da atividade lá atrás
 @app.route("/quero-doar", methods=["POST"])
 def quero_doar():
-    # recebendo os dados do enviados pelo cliente
     dados = request.get_json()
 
     titulo = dados.get("titulo")
@@ -51,18 +50,18 @@ def quero_doar():
     image_url = dados.get("image_url")
 
     if not titulo or not categoria or not autor or not image_url:
-        # retornando uma mensagem de erro caso algum campo esteja vazio
         return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
 
-    # abrindo a conexão com o banco de dados
-    with sqlite3.connect("database.db") as conn:
-        conn.execute("""
-            INSERT INTO LIVROS (titulo, categoria, autor, image_url) 
-            VALUES(?, ?, ?, ?)
-            """, (titulo, categoria, autor, image_url)
-        )
-        conn.commit()  # salvando as alterações no banco de dados
-    return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
+    try:
+        with sqlite3.connect("database.db") as conn:
+            conn.execute("""
+                INSERT INTO LIVROS (titulo, categoria, autor, image_url) 
+                VALUES(?, ?, ?, ?)
+            """, (titulo, categoria, autor, image_url))
+            conn.commit()
+        return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
+    except sqlite3.Error as e:
+        return jsonify({"erro": f"Erro ao cadastrar livro: {str(e)}"}), 500
 
 
 # Livros cadastrados
