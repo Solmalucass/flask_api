@@ -51,17 +51,17 @@ def quero_doar():
 
     if not titulo or not categoria or not autor or not image_url:
         return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
+    with sqlite3.connect("database.db") as conn:
+        conn.execute(
+            """
+            INSERT INTO LIVROS (titulo, categoria, autor, image_url) 
+            VALUES (?, ?, ?, ?)
+            """,
+            (titulo, categoria, autor, image_url),
+        )
+        conn.commit()
 
-    try:
-        with sqlite3.connect("database.db") as conn:
-            conn.execute("""
-                INSERT INTO LIVROS (titulo, categoria, autor, image_url) 
-                VALUES(?, ?, ?, ?)
-            """, (titulo, categoria, autor, image_url))
-            conn.commit()
-        return jsonify({"Mensagem": "Livro cadastrado com sucesso!"}), 201
-    except sqlite3.Error as e:
-        return jsonify({"erro": f"Erro ao cadastrar livro: {str(e)}"}), 500
+    return jsonify({"mensagem": "Livro cadastrado com sucesso"}), 201
 
 
 # Livros cadastrados
